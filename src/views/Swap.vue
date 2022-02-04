@@ -1,44 +1,22 @@
 <template>
 <div class="flex flex-col justify-center">
-  <div class="tabs mb-2 mt-8">
-    <div @click="tab = 0" class="tab tab-lg tab-lifted" :class="{'tab-active': tab === 0 || swaps.length === 0}">Create swap</div>
-    <div v-show="swaps.length > 0" @click="tab = 1" class="tab tab-lg tab-lifted" :class="{'tab-active': tab === 1}">My swaps</div>
-    <div class="flex-1 cursor-default tab tab-lifted"></div>
-  </div>
-  <div v-if="tab === 0" class="py-6">
+  <h1 class="text-3xl">Swap #{{ swapId }}</h1>
+  <div v-if="swap" class="py-6">
     <div class="flex flex-col items-start md:flex-row gap-6">
       <div class="p-10 card bg-base-200">
-        <h2 class="text-2xl mb-4">Offer</h2>
-        <token-input-group v-model="offer" ref="ioffer" />
+        <h2 class="text-2xl mb-4">Receive</h2>
+        <token-bundle :bundle="offer" />
       </div>
       <div class="p-10 card bg-base-200">
-        <h2 class="text-2xl mb-4">Receive</h2>
-        <token-input-group v-model="want" ref="iwant" />
+        <h2 class="text-2xl mb-4">Offer</h2>
+        <token-bundle :bundle="want" />
       </div>
     </div>
-    <button @click="createOffer" :class="{loading: creating}" type="button" class="w-40 mt-6 btn">Create swap</button>
-  </div>
-  <div v-if="tab === 1" class="py-6">
-    <div class="flex flex-col items-start md:flex-row gap-6 flex-wrap">
-      <div v-for="swap in swaps" :key="swap[0]" class="bg-gray-100 rounded-xl p-4 flex-1">
-        <div class="relative">
-          <button class="btn btn-ghost btn-square btn-xs absolute right-0">
-          <svg @click="copySwapUrl(swap[0])" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 " fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-          </button>
-          I give:
-          <token-bundle :bundle="swap[1].gives" class="mt-1 mb-4" />
-          I want:
-          <token-bundle :bundle="swap[1].wants" class="mt-1 mb-4" />
-          <button @click="cancelOffer(swap[0])" :class="{ loading: cancelling }" class="btn btn-sm">Cancel</button>
-        </div>
-      </div>
-    </div>
+    <button @click="acceptOffer" :class="{loading: working}" type="button" class="w-40 mt-6 btn">Accept swap</button>
   </div>
   <div v-show="modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-10">
     <div class="modal-box">
-      <p>This is an experimental tool. Use at your oun risk. No guaranties given.</p>
+      <p>Before accepting this swap, check everything carefully: Contract addresses, token Ids, amount. DYOR</p> 
       <div class="modal-action">
         <button @click="modal = false" class="btn">OK</button>
       </div>
@@ -50,108 +28,61 @@
 <script>
 import { mapState } from 'vuex'
 import TokenBundle from '../components/TokenBundle.vue'
-import TokenInputGroup from '../components/TokenInputGroup.vue'
-// import PetList from '../components/PetList.vue'
 
 export default {
-  components: { TokenInputGroup, TokenBundle },
-  // components: { PetList },
-  name: 'Home',
+  components: { TokenBundle },
+  props: {
+    swapId: [Number, String] 
+  },
+  name: 'Swap',
   data () {
     return {
       timer: null,
-      creating: false,
-      cancelling: false,
-      tab: 0,
-      offer: [],
-      want: [],
-      showModal: !localStorage.getItem('modalShown'),
-      swaps: []
+      working: false,
+      loading: false,
+      modal: true,
+      swap: null
     }
   },
   mounted () {
-    this.poll()
-    this.$store.dispatch('onTransactionStream', (data) => {
-      console.log('>>>>>>', data)
-    })
+    this.loadOffer()
   },
   computed: {
-    ...mapState(['swapsCreated', 'userAddress']),
-    modal: {
-      get () {
-        return this.showModal
-      },
-      set (value) {
-        if (value) localStorage.removeItem('modalShown')
-        else localStorage.setItem('modalShown', 'yes')
-        this.showModal = value
-      }
+    ...mapState(['userAddress']),
+    want () {
+      return this.swap ? this.swap.wants : false
     },
-    params () {
-      const offer = {}
-      const want = {}
-      this.offer.forEach(({ kt, id, amount }) => {
-        if (!offer[kt]) {
-          offer[kt] = []
-        }
-        offer[kt].push({ token_id: id, amount })
-      })
-      this.want.forEach(({ kt, id, amount }) => {
-        if (!want[kt]) {
-          want[kt] = []
-        }
-        want[kt].push({ token_id: id, amount })
-      })
-      return [offer, want]
+    offer () {
+      return this.swap ? this.swap.gives : false
     }
   },
   methods: {
-    async createOffer () {
+    async acceptOffer () {
       try {
-        if (this.creating) return
-        if (!this.userAddress) {
-          this.$toast.warning('Connect wallet first')
-          return
-        }
-        if (!this.$refs.ioffer.validate() || !this.$refs.iwant.validate()) throw new Error('Fill in the swap form correctly')
-        this.creating = true
-        await this.$store.dispatch('createOffer', this.params)
+        if (this.working) return
+        this.working = true
+        await this.$store.dispatch('acceptOffer', { id: this.swapId, bundle: this.want })
       } catch (e) {
         const data = e.data?.find(it => !!it.with)
         console.log(data)
         this.$toast.error(data?.with?.string || e.message)
       } finally {
-        this.creating = false
+        this.working = false
       }
     },
-    async cancelOffer (id) {
+    async loadOffer () {
       try {
-        if (this.cancelling) return
-        this.cancelling = true
-        await this.$store.dispatch('cancelOffer', id)
+        this.loading = true
+        this.swap = await this.$store.dispatch('getSwap', this.swapId)
+        if (!this.swap) throw new Error(`Swap #${this.swapId} is not available any more`)
+        console.log(this.swap)
       } catch (e) {
         const data = e.data?.find(it => !!it.with)
         console.log(data)
         this.$toast.error(data?.with?.string || e.message)
       } finally {
-        this.cancelling = false
+        this.loading = false
       }
-    },
-    copySwapUrl (id) {
-      this.$copyText(`${window.location.origin}/swap/${id}`).then((e) => {
-        this.$toast.info('Swap URL copied to clipboard')
-        console.log(e)
-      }, (e) => {
-        this.$toast.error('Could not copy URL to clipboard')
-        console.log(e)
-      })
-    },
-    async poll () {
-      clearTimeout(this.timer)
-      this.timer = null
-      const swaps = await this.$store.dispatch('listUserOffers', this.userAddress)
-      this.$set(this, 'swaps', swaps || [])
-      this.timer = setTimeout(this.poll, 12222)
     }
   }
 }

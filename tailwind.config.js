@@ -971,7 +971,7 @@ module.exports = {
   plugins: [require('daisyui')],
   daisyui: {
     styled: true,
-    themes: ['dark'],
+    themes: ['light'],
     rtl: false,
   }
 }

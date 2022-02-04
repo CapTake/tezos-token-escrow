@@ -1,13 +1,13 @@
 import { NetworkType } from '@airgap/beacon-sdk'
 const PROJECT_NAME = 'Tez pets'
-const NETWORK = NetworkType.MAINNET
+const NETWORK = NetworkType.HANGZHOUNET
 
 export default {
   endpoint: NETWORK === NetworkType.MAINNET ? 'https://mainnet.api.tez.ie' : 'https://hangzhounet.api.tez.ie',
   explorer: 'https://tzkt.io',
   tzktapi: NETWORK === NetworkType.MAINNET ? 'https://api.tzkt.io' : 'https://api.hangzhou2net.tzkt.io',
   network: NETWORK, // MAINNET
-  crowdsale: 'KT1JxbKT8f1VdPCGkyg9oJH7XDrJF7rK92dU',
+  kt: 'KT1D4A2iPXuPRiK4W77pbdsEa2C32KTFk2Vd', // testnet
   pageSize: 20,
   pollInterval: 15000,
   projectName: PROJECT_NAME,

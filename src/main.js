@@ -5,10 +5,14 @@ import store from './store'
 import vueAwesomeCountdown from 'vue-awesome-countdown'
 import './assets/tailwind.css'
 import Toast, { POSITION } from 'vue-toastification'
+import VueClipboard from 'vue-clipboard2'
+
 // https://github.com/Maronato/vue-toastification
 import 'vue-toastification/dist/index.css'
 
 Vue.config.productionTip = false
+
+Vue.use(VueClipboard)
 
 Vue.use(Toast, {
   timeout: 5000,
