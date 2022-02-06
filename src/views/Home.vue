@@ -6,7 +6,7 @@
     <div class="flex-1 cursor-default tab tab-lifted"></div>
   </div>
   <div v-if="tab === 0" class="py-6">
-    <div class="flex flex-col items-start md:flex-row gap-6">
+    <div class="flex flex-col justify-center md:flex-row gap-6">
       <div class="p-10 card bg-base-200">
         <h2 class="text-2xl mb-4">Offer</h2>
         <token-input-group v-model="offer" ref="ioffer" />
@@ -38,7 +38,7 @@
   </div>
   <div v-show="modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-10">
     <div class="modal-box">
-      <p>This is an experimental tool. Use at your oun risk. No guaranties given.</p>
+      <p>This is an experimental tool. Use at your own risk</p>
       <div class="modal-action">
         <button @click="modal = false" class="btn">OK</button>
       </div>

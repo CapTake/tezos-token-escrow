@@ -16,7 +16,7 @@
   </div>
   <div v-show="modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-10">
     <div class="modal-box">
-      <p>Before accepting this swap, check everything carefully: Contract addresses, token Ids, amount. DYOR</p> 
+      <p>Check Contract Address, ID and amount before any swap. Use with caution.</p> 
       <div class="modal-action">
         <button @click="modal = false" class="btn">OK</button>
       </div>

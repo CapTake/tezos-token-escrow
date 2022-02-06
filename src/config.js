@@ -7,7 +7,7 @@ export default {
   explorer: 'https://tzkt.io',
   tzktapi: NETWORK === NetworkType.MAINNET ? 'https://api.tzkt.io' : 'https://api.hangzhou2net.tzkt.io',
   network: NETWORK, // MAINNET
-  kt: 'KT1D4A2iPXuPRiK4W77pbdsEa2C32KTFk2Vd', // testnet
+  kt: 'KT1LgZqQaK2pi1etXXgadWDCpSZ9JNgGaKFh', // testnet
   pageSize: 20,
   pollInterval: 15000,
   projectName: PROJECT_NAME,
