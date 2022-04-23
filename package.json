@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "@tailwindcss/postcss7-compat": "npm:@tailwindcss/postcss7-compat@^2.0.2",
-    "@taquito/beacon-wallet": "^11",
-    "@taquito/taquito": "^11",
-    "@taquito/tzip16": "^11",
+    "@taquito/beacon-wallet": "^12",
+    "@taquito/taquito": "^12",
+    "@taquito/tzip16": "^12",
     "autoprefixer": "^9",
     "core-js": "^3.6.5",
     "daisyui": "^1.14.6",
