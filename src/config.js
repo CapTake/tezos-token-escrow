@@ -1,5 +1,5 @@
 import { NetworkType } from '@airgap/beacon-sdk'
-const PROJECT_NAME = 'Tez pets'
+const PROJECT_NAME = 'Tez otc'
 const NETWORK = NetworkType.MAINNET
 
 export default {
@@ -13,47 +13,5 @@ export default {
   projectName: PROJECT_NAME,
   walletOptions: {
     name: PROJECT_NAME,
-    eventHandlers: {
-      PERMISSION_REQUEST_SUCCESS: {
-        handler: async (data) => {
-          console.log('PERMISSION_REQUEST_SUCCESS', data)
-        }
-      },
-      PERMISSION_REQUEST_SENT: {
-        handler: async (data) => {
-          console.log('PERMISSION_REQUEST_SENT', data)
-        }
-      },
-      // PERMISSION_REQUEST_ERROR: {
-      //   handler: async (data) => {
-      //     console.log('PERMISSION_REQUEST_ERROR', data)
-      //   }
-      // },
-      ACKNOWLEDGE_RECEIVED: {
-        handler: async (data) => {
-          console.log('ACKNOWLEDGE_RECEIVED', data)
-        }
-      },
-      NO_PERMISSIONS: {
-        handler: async (data) => {
-          console.log('NO_PERMISSIONS', data)
-        }
-      },
-      BROADCAST_REQUEST_SENT: {
-        handler: async (data) => {
-          console.log('BROADCAST_REQUEST_SENT', data)
-        }
-      },
-      BROADCAST_REQUEST_SUCCESS: {
-        handler: async (data) => {
-          console.log('BROADCAST_REQUEST_SUCCESS', data)
-        }
-      },
-      BROADCAST_REQUEST_ERROR: {
-        handler: async (data) => {
-          console.log('BROADCAST_REQUEST_ERROR', data)
-        }
-      }
-    }
   }
 }
